@@ -22,5 +22,18 @@ When you start make the constructor for the BlitzLogger item you must
 include the logLevel
 
     BlitzLogger(/* Put LogLevel Here */)
+	
+To use BlitzLogger at the beginning of the program, you need to use the
+init command
 
+    BlitzLogger.init();
+	
+After that, when you call one of the log functions
+
+    *BlitzLogger.Error();
+    *BlitzLogger.Warning();
+    *BlitzLogger.Info();
+    *BlitzLogger.Debug();
+    *BlitzLogger.Trace();
+	
 	
