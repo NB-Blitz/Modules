@@ -30,10 +30,15 @@ init command
 	
 After that, when you call one of the log functions
 
-*BlitzLogger.Error();
-*BlitzLogger.Warning();
-*BlitzLogger.Info();
-*BlitzLogger.Debug();
-*BlitzLogger.Trace();
-	
-	
+* BlitzLogger.Error();
+* BlitzLogger.Warning();
+* BlitzLogger.Info();
+* BlitzLogger.Debug();
+* BlitzLogger.Trace();
+
+You need to pass it a String stating what stage of the game you are in
+and what the message you want to write is.
+
+Example:
+
+    BlitzLogger.Error("Tele-OP", "Network Tables Disconnected");
