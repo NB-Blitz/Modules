@@ -17,11 +17,12 @@ There are 5 LogLevels
     Debug    - 3
     Trace    - 4
 
-When you start make the constructor for the BlitzLogger item you must
-include the logLevel. When you call the individual logging functions
+When you start, make the constructor for the BlitzLogger item (you must
+include the logLevel). When you call the individual logging functions
 they will check to see if the log level you set is greater than or
 equal to the log level for that funcion. As an example if you set log
-level to 2 the Error, Warning, and Info functions will output to the file
+level to 2, the Error, Warning, and Info functions will output to the file,
+while the Debug and Trace functions will not.
 
     BlitzLogger(/* Put LogLevel Here */)
 	
@@ -39,7 +40,7 @@ After that, when you call one of the log functions
 * BlitzLogger.Trace();
 
 You need to pass it a String stating what stage of the game you are in
-and what the message you want to write is.
+and and a string stating what the message you want to write is.
 
 Example:
 
