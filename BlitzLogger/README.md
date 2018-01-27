@@ -19,7 +19,10 @@ There are 5 LogLevels
     Trace    - 4
 
 When you start make the constructor for the BlitzLogger item you must
-include the logLevel
+include the logLevel. When you call the individual logging functions
+they will check to see if the log level you set is greater than or
+equal to the log level for that funcion. As an example if you set log
+level to 2 the Error, Warning, and Info functions will output to the file
 
     BlitzLogger(/* Put LogLevel Here */)
 	
@@ -42,3 +45,7 @@ and what the message you want to write is.
 Example:
 
     BlitzLogger.Error("Tele-OP", "Network Tables Disconnected");
+    
+After the while loop in teleop you need to close the BlizLogger
+
+    BlitzLogger.close();
