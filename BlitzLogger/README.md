@@ -30,10 +30,10 @@ init command
 	
 After that, when you call one of the log functions
 
-    *BlitzLogger.Error();
-    *BlitzLogger.Warning();
-    *BlitzLogger.Info();
-    *BlitzLogger.Debug();
-    *BlitzLogger.Trace();
+*BlitzLogger.Error();
+*BlitzLogger.Warning();
+*BlitzLogger.Info();
+*BlitzLogger.Debug();
+*BlitzLogger.Trace();
 	
 	
