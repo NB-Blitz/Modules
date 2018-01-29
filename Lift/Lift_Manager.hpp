@@ -15,9 +15,9 @@ namespace FRC
 		WPI_TalonSRX Lift_Motor; // Lift Motor
 
 		// Variables
-		double Speed_Ref = 0;      // Raw Motor Output
-		double Position_Error = 0; // Distance Between current position and target position
-		double Position_Ref = 0;   // Target Position
+		double speedRef = 0;      // Raw Motor Output
+		double positionError = 0; // Distance Between current position and target position
+		double positionRef = 0;   // Target Position
 
 		const double UP_GAIN         = 0.00025;  // Speed Multiplier when going up
 		const double DOWN_GAIN       = 0.000125; // Speed Multiplier when going down
