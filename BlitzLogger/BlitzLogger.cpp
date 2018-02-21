@@ -114,7 +114,7 @@ void FRC::BlitzLogger::warning(std::string currentStage, std::string message)
 
 void FRC::BlitzLogger::info(std::string currentStage, std::string message)
 {
-	if(logLevel >= Error)
+	if(logLevel >= Info)
 	{
 		log(currentStage, "Info", message);
 	}
