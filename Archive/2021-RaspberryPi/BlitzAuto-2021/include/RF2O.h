@@ -1,0 +1,165 @@
+/** ****************************************************************************************
+*  This node presents a fast and precise method to estimate the planar motion of a lidar
+*  from consecutive range scans. It is very useful for the estimation of the robot odometry from
+*  2D laser range measurements.
+*  This module is developed for mobile robots with innacurate or inexistent built-in odometry.
+*  It allows the estimation of a precise odometry with low computational cost.
+*  For more information, please refer to:
+*
+*  Planar Odometry from a Radial Laser Scanner. A Range Flow-based Approach. ICRA'16.
+*  Available at: http://mapir.isa.uma.es/mapirwebsite/index.php/mapir-downloads/papers/217
+*
+* Maintainer: Javier G. Monroy
+* MAPIR group: http://mapir.isa.uma.es/
+*
+* Modifications: Jeremie Deray
+******************************************************************************************** */
+#pragma once
+
+#include <iostream>
+#include <fstream>
+#include <numeric>
+#include <chrono>
+
+#include "LaserScan.h"
+#include "GeometryMsgs.h"
+
+#include <Eigen/Dense>
+#include <Eigen/Geometry>
+#include <unsupported/Eigen/MatrixFunctions>
+
+#define M_PI 3.14159265358979323846
+
+using Scalar = float;
+using Pose2d = Eigen::Isometry2d;
+using Pose3d = Eigen::Isometry3d;
+using MatrixS31 = Eigen::Matrix<Scalar, 3, 1>;
+using IncrementCov = Eigen::Matrix<Scalar, 3, 3>;
+using Time = std::chrono::high_resolution_clock::time_point;
+using Duration = std::chrono::milliseconds;
+
+using namespace std;
+
+namespace Blitz
+{
+    class RF2O {
+        public:
+            void Initialize(LaserScan& scan, GeometryMsgs::Pose& initial_robot_pose);
+            bool IsInitialize();
+            bool OdometryCalc(LaserScan& scan);
+            void SetLaserPose(Pose3d& laser_pose);
+            Pose3d& GetIncrement();
+            IncrementCov& GetIncrementCovariance();
+            Pose3d& GetPose();
+            GeometryMsgs::Pose GetPoseFromLaser(LaserScan* new_scan);
+
+            template<typename T>
+            Eigen::Matrix<T, 3, 3> matrixYaw(T yaw)
+            {
+                return matrixRollPitchYaw<T>(0, 0, yaw);
+            };
+            template<typename T>
+            Eigen::Matrix<T, 3, 3> matrixRollPitchYaw(T roll, T pitch, T yaw)
+            {
+                Eigen::AngleAxis<T> ax = Eigen::AngleAxis<T>(roll,  Eigen::Matrix<T, 3, 1>::UnitX());
+                Eigen::AngleAxis<T> ay = Eigen::AngleAxis<T>(pitch, Eigen::Matrix<T, 3, 1>::UnitY());
+                Eigen::AngleAxis<T> az = Eigen::AngleAxis<T>(yaw,   Eigen::Matrix<T, 3, 1>::UnitZ());
+
+                return (az * ay * ax).toRotationMatrix().matrix();
+            };
+            template <typename T>
+            T sign(T x) 
+            {
+                return x<T(0) ? -1:1;
+            };
+
+            template <typename Derived>
+            inline typename Eigen::MatrixBase<Derived>::Scalar
+            getYaw(const Eigen::MatrixBase<Derived>& r)
+            {
+                return std::atan2( r(1, 0), r(0, 0) );
+            }
+
+        private:
+            bool verbose, module_initialized;
+            bool first_laser_scan = true;
+
+            std::vector<Eigen::MatrixXf> range;
+            std::vector<Eigen::MatrixXf> range_old;
+            std::vector<Eigen::MatrixXf> range_inter;
+            std::vector<Eigen::MatrixXf> range_warped;
+            std::vector<Eigen::MatrixXf> xx;
+            std::vector<Eigen::MatrixXf> xx_inter;
+            std::vector<Eigen::MatrixXf> xx_old;
+            std::vector<Eigen::MatrixXf> xx_warped;
+            std::vector<Eigen::MatrixXf> yy;
+            std::vector<Eigen::MatrixXf> yy_inter;
+            std::vector<Eigen::MatrixXf> yy_old;
+            std::vector<Eigen::MatrixXf> yy_warped;
+            std::vector<Eigen::MatrixXf> transformations;
+
+            Eigen::MatrixXf range_wf;
+            Eigen::MatrixXf dtita;
+            Eigen::MatrixXf dt;
+            Eigen::MatrixXf rtita;
+            Eigen::MatrixXf normx, normy, norm_ang;
+            Eigen::MatrixXf weights;
+            Eigen::MatrixXi null;
+
+            Eigen::MatrixXf A,Aw;
+            Eigen::MatrixXf B,Bw;
+
+            MatrixS31 Var;	//3 unknowns: vx, vy, w
+            IncrementCov cov_odo;
+
+            float fps;  // Hz
+            float fovh; //Horizontal FOV
+            unsigned int cols;
+            unsigned int cols_i;
+            unsigned int width;
+            unsigned int ctf_levels;
+            unsigned int image_level, level;
+            unsigned int num_valid_range;
+            unsigned int iter_irls;
+            float g_mask[5];
+
+            double lin_speed, ang_speed;
+
+            Duration m_runtime;
+            Time last_odom_time, current_scan_time;
+
+            MatrixS31 kai_abs_;
+            MatrixS31 kai_loc_;
+            MatrixS31 kai_loc_old_;
+            MatrixS31 kai_loc_level_;
+
+            Pose3d last_increment_;
+            Pose3d laser_pose_on_robot_;
+            Pose3d laser_pose_on_robot_inv_;
+            Pose3d laser_pose_;
+            Pose3d laser_oldpose_;
+            Pose3d robot_pose_;
+            Pose3d robot_oldpose_;
+
+            bool test;
+            std::vector<double> last_m_lin_speeds;
+            std::vector<double> last_m_ang_speeds;
+
+            bool publish_tf;
+            LaserScan last_scan;
+            GeometryMsgs::Pose initial_robot_pose;
+
+            void CreateImagePyramid();
+            void CalculateCoord();
+            void PerformWarping();
+            void CalculaterangeDerivativesSurface();
+            void ComputeNormals();
+            void ComputeWeights();
+            void FindNullPoints();
+            void SolveSystemOneLevel();
+            void SolveSystemNonLinear();
+            bool FilterLevelSolution();
+            void PoseUpdate();
+            void Reset(Pose3d& ini_pose);
+    };
+}
