@@ -1,4 +1,4 @@
-# Blitz Logger
+# BlitzLogger
 BlitzLogger creates a textfile that must be opened in NotePad++ and 
 can be used to debug and take logs of what our robot is doing
 
@@ -46,4 +46,5 @@ After the while loop in teleop you need to close the BlizLogger
 ```cpp
     BlitzLogger.close();
 ```
-*Made by Sam Ferguson*
+
+Made by Sam Ferguson in 2018, archived in 2021.

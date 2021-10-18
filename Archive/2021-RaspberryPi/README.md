@@ -1,5 +1,5 @@
-# Raspberry Pi
-Code run on a raspberry pi. This code is intended for use in the First Robotics Competition.
+# 2021 - Raspberry Pi
+Code run on a Raspberry Pi. This code is intended for use in the First Robotics Competition during the 2021 Infinite Recharge At Home season.
 
 ## Pi Setup
 ### Install Raspbian
@@ -65,3 +65,5 @@ cd ./Modules/Raspberry Pi/some/other/folder/
 make
 ./main
 ```
+
+Made by Austin Kugler in 2021, archived in 2022.
